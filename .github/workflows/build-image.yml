@@ -1,14 +1,17 @@
-name: build push deploy image
+name: build push image
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - "main"
+    paths:
+      - 'Dockerfile'
+      - 'requirements.txt'
     paths-ignore:
       - 'README.md'
 
 jobs:
-  build_push_deploy:
-    if: github.run_number != 1
+  build_push:
     permissions:
       contents: read
       packages : write
@@ -20,50 +23,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - id: setup-tools
-        uses: buildpacks/github-actions/setup-tools@v5.4.0
-
-      - id: setup-pack
-        uses: buildpacks/github-actions/setup-pack@v5.4.0
-
-      - id: package
-        run: |
-          #!/usr/bin/env bash
-          set -euo pipefail
-          img_name=${{ vars.PROJECT_NAME }}-function
-          echo "image name : $img_name"
-          pack build  --builder gcr.io/buildpacks/builder:v1 \
-            --env GOOGLE_FUNCTION_SIGNATURE_TYPE=http \
-            --env GOOGLE_FUNCTION_TARGET=${{ vars.FUNCTION_NAME }} \
-            --env GOOGLE_PYTHON_VERSION="3.10.x" \
-            $img_name
-        shell: bash
-
-      - name: Google Auth
-        id: auth
-        uses: 'google-github-actions/auth@v1'
-        with:
-          token_format: "access_token"
-          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
-
-      - name: Log in to the Container registry
+      - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          registry: ${{ vars.GCP_REGION}}-docker.pkg.dev
-          username: oauth2accesstoken
-          password: ${{ steps.auth.outputs.access_token }}
-
-      - name: Push Docker image
-        run: docker tag ${{ vars.PROJECT_NAME }}-function:latest ${{ env.IMAGE_NAME }}:latest && docker push ${{ env.IMAGE_NAME }}:latest 
-      
-      - name: Deploy to Cloud Run
-        id: deploy
-        uses: google-github-actions/deploy-cloudrun@v1
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
+      - name: Build and push
+        uses: docker/build-push-action@v6
         with:
-          service: ${{ vars.GCP_CLOUD_SERVICE }}
-          region: ${{ vars.GCP_REGION}}
-          image: ${{ env.IMAGE_NAME }}:latest
+          push: true
+          tags: user/app:latest
 
       # If required, use the Cloud Run url output in later steps
       - name: Show Output
