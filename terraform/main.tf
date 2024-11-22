@@ -1,8 +1,8 @@
 locals {
   parent_folder_id         = 658965356947 # production folder
   secret-managment-project = "prj-dinum-p-secret-mgnt-aaf4"
-  templates_project = "prj-dinum-data-templates-66aa"
-  workload_bucket = "bucket-prj-dinum-data-templates-66aa"
+  templates_project        = "prj-dinum-data-templates-66aa"
+  workload_bucket          = "bucket-prj-dinum-data-templates-66aa"
   sa_roles = [
     "roles/bigquery.dataEditor",
     "roles/bigquery.user",
@@ -17,7 +17,7 @@ locals {
     "cloudscheduler.googleapis.com",
     "dataproc.googleapis.com"
   ]
-  safe-ds-name = substr(lower(replace(var.dataset_name, "_", "-")),0,24)
+  safe-ds-name = substr(lower(replace(var.dataset_name, "_", "-")), 0, 24)
 }
 
 resource "google_service_account" "service_account" {
@@ -28,9 +28,9 @@ resource "google_service_account" "service_account" {
 
 resource "google_project_iam_member" "bigquery_editor_bindings" {
   for_each = toset(local.sa_roles)
-  project = var.project_id
-  role    = each.key
-  member  = "serviceAccount:${google_service_account.service_account.email}"
+  project  = var.project_id
+  role     = each.key
+  member   = "serviceAccount:${google_service_account.service_account.email}"
 }
 
 resource "google_project_iam_custom_role" "dataproc-custom-role" {
@@ -74,8 +74,8 @@ resource "google_project_iam_member" "service_account_bindings_artifact_r" {
 
 resource "google_project_service" "activate_api" {
   for_each = toset(local.api_to_activate)
-  project = var.project_id
-  service = each.key
+  project  = var.project_id
+  service  = each.key
 }
 
 data "google_secret_manager_secret_version" "jira-bq-key-secret" {
