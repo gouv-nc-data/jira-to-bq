@@ -110,7 +110,7 @@ resource "google_cloud_scheduler_job" "job" {
               "--bq-dataset=${var.dataset_name}",
               "--jira-token=${data.google_secret_manager_secret_version.jira-bq-key-secret.secret_data}"
             ],
-            "mainPythonFileUri" : "gs://bucket-prj-dinum-data-templates-66aa/jira_to_bigquery.py"
+            "mainPythonFileUri" : "gs://bucket-prj-dinum-data-templates-66aa/jira_to_bigquery.py#1732238113777463"
           },
           "runtimeConfig" : {
             "containerImage" : "${var.region}-docker.pkg.dev/${local.templates_project}/templates/jira-to-bq:latest",
