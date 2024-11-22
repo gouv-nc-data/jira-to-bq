@@ -18,6 +18,7 @@ locals {
     "dataproc.googleapis.com"
   ]
   safe-ds-name = substr(lower(replace(var.dataset_name, "_", "-")), 0, 24)
+  safe_gen_id = length(var.generation_id) > 0 ? "#${var.generation_id}" : ""
 }
 
 resource "google_service_account" "service_account" {
@@ -110,7 +111,7 @@ resource "google_cloud_scheduler_job" "job" {
               "--bq-dataset=${var.dataset_name}",
               "--jira-token=${data.google_secret_manager_secret_version.jira-bq-key-secret.secret_data}"
             ],
-            "mainPythonFileUri" : "gs://bucket-prj-dinum-data-templates-66aa/jira_to_bigquery.py#1732238113777463"
+            "mainPythonFileUri" : "gs://bucket-prj-dinum-data-templates-66aa/jira_to_bigquery.py${local.safe_gen_id}"
           },
           "runtimeConfig" : {
             "containerImage" : "${var.region}-docker.pkg.dev/${local.templates_project}/templates/jira-to-bq:latest",

@@ -39,3 +39,9 @@ variable "mode" {
   description = "type d'upload sur bigquery"
   default     = "overwrite"
 }
+
+variable "generation_id" {
+  type        = string
+  description = "generation id du ficheir dans le bucket"
+  default     = ""
+}
