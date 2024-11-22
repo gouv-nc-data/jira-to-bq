@@ -139,7 +139,7 @@ resource "google_cloud_scheduler_job" "job" {
       )
     )
   }
-  depends_on = [google_project_service.cloudschedulerapi]
+  # depends_on = [google_project_service.cloudschedulerapi]
 }
 
 ###############################
