@@ -1,21 +1,19 @@
-import os
+import os, re, logging
+
 from jira import JIRA
-from google.cloud import bigquery
 import pandas as pd
 import unicodedata
-import re
-import logging
 from datetime import datetime
 
-
 # GCP
-import functions_framework
 from google.oauth2 import service_account
+from google.cloud import bigquery
 import google.auth
 import google.cloud.logging
 
+
 #----------------------------
-# Contexte
+# Context
 #----------------------------
 
 JIRA_URL = "https://jira.gouv.nc"
@@ -31,6 +29,8 @@ BQ_DATASET = "" # ex pspc
 
 # jira
 JIRA_TOKEN = os.environ['JIRA_TOKEN']
+if not JIRA_TOKEN:
+    raise ValueError("JIRA_TOKEN is not set in the environment.")
 
 # GCP
 cred_file = '' # ex: prj-davar-p-bq-a01c-c04f4c56dc89.json
@@ -41,6 +41,8 @@ SCOPES = [ 'https://www.googleapis.com/auth/bigquery']
 if env_local:
     creds = service_account.Credentials.from_service_account_file(cred_file)
 else:
+    if not os.environ['GOOGLE_APPLICATION_CREDENTIALS']:
+        raise ValueError("GOOGLE_APPLICATION_CREDENTIALS is not set in the environment.")
     creds, _ = google.auth.default() # from env var GOOGLE_APPLICATION_CREDENTIALS 
 
 # retrive credentials for scopes defined.
@@ -219,8 +221,7 @@ def get_last_update_date(bq_client, table_name):
 # Fonction principale
 #----------------------------
 
-@functions_framework.http
-def jira_pspc(request): # le nom de la function est le GOOGLE_FUNCTION_TARGET, ex : pour le repo dass-yarik-vidal-function : yarik_vidal (les '-' deviennent '_')
+def jira_to_bq():
 
     field_mapping = get_fields_map(jira)
     pj_issues_types = jira.issue_types_for_project(projectIdOrKey=JIRA_PROJECT)
@@ -259,4 +260,4 @@ def jira_pspc(request): # le nom de la function est le GOOGLE_FUNCTION_TARGET, e
     return "ok"
 
 if __name__ == "__main__":
-    jira_pspc(None) # le nom de la function est le GOOGLE_FUNCTION_TARGET, ex : pour le repo dass-yarik-vidal-function : yarik_vidal (les '-' deviennent '_')
+    jira_to_bq()

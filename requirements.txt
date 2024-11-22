@@ -1,4 +1,3 @@
-functions-framework==3.*
 google.cloud.logging
 pandas
 jira>=3.5.1
