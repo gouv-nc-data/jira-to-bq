@@ -104,12 +104,7 @@ resource "google_cloud_scheduler_job" "job" {
       jsonencode(
         {
           "pysparkBatch" : {
-            # "jarFileUris" : [
-            #   "gs://bucket-prj-dinum-data-templates-66aa/postgresql-42.2.6.jar"
-            # ],
-            "container-image" : "${var.region}-docker.pkg.dev/${local.templates_project}/templates/jira-to-bq:latest",
             "args" : [
-              # "--exclude=${var.exclude}",
               "--jira-project=${var.jira_project}",
               "--gcp-project=${var.project_id}",
               "--bq-dataset=${var.dataset_name}",
@@ -118,6 +113,7 @@ resource "google_cloud_scheduler_job" "job" {
             "mainPythonFileUri" : "gs://bucket-prj-dinum-data-templates-66aa/jira_to_bigquery.py#1732238113777463"
           },
           "runtimeConfig" : {
+            "containerImage" : "${var.region}-docker.pkg.dev/${local.templates_project}/templates/jira-to-bq:latest",
             "version" : "2.1",
             "properties" : {
               "spark.executor.instances" : "1",
