@@ -45,3 +45,9 @@ variable "generation_id" {
   description = "generation id du ficheir dans le bucket"
   default     = ""
 }
+
+variable "network_name" {
+  type        = string
+  description = "network name"
+  default     = "default"
+}
