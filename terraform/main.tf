@@ -17,12 +17,18 @@ locals {
     "cloudscheduler.googleapis.com",
     "dataproc.googleapis.com"
   ]
-  safe_ds_name = substr(lower(replace(var.dataset_name, "_", "-")), 0, 24)
-  safe_gen_id  = length(var.generation_id) > 0 ? "#${var.generation_id}" : ""
+  hyphen_ds_name = substr(lower(replace(var.dataset_name, "_", "-")), 0, 24)
+  safe_gen_id    = length(var.generation_id) > 0 ? "#${var.generation_id}" : ""
+}
+
+resource "google_bigquery_dataset" "dataset" {
+  project    = var.project_id
+  dataset_id = var.dataset_name
+  location   = "EU"
 }
 
 resource "google_service_account" "service_account" {
-  account_id   = "sa-jira2bq-${local.safe_ds_name}"
+  account_id   = "sa-jira2bq-${local.hyphen_ds_name}"
   display_name = "Service Account created by terraform for ${var.project_id}"
   project      = var.project_id
 }
@@ -86,7 +92,7 @@ data "google_secret_manager_secret_version" "jira-bq-key-secret" {
 
 resource "google_cloud_scheduler_job" "job" {
   project          = var.project_id
-  name             = "jira2bq-job-${local.safe_ds_name}"
+  name             = "jira2bq-job-${local.hyphen_ds_name}"
   schedule         = var.schedule
   time_zone        = "Pacific/Noumea"
   attempt_deadline = "320s"
