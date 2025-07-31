@@ -18,6 +18,11 @@ variable "dataset_name" {
   description = "nom du projet"
 }
 
+variable "jira_url" {
+  type        = string
+  description = "url de l'instance jira"
+}
+
 variable "jira_project" {
   type        = string
   description = "nom du projet jira ex : DATA"

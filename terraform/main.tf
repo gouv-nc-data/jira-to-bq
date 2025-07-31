@@ -115,6 +115,7 @@ resource "google_cloud_scheduler_job" "job" {
               "--jira-project=${var.jira_project}",
               "--gcp-project=${var.project_id}",
               "--bq-dataset=${var.dataset_name}",
+              "--jira-url=${var.jira_url}",
               "--jira-token=${data.google_secret_manager_secret_version.jira-bq-key-secret.secret_data}"
             ],
             "mainPythonFileUri" : "gs://bucket-prj-dinum-data-templates-66aa/jira_to_bigquery.py${local.safe_gen_id}"
