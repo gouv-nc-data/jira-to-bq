@@ -1,47 +1,23 @@
-name: build push image
+name: "Build and Push Docker GCP"
 
 on:
   push:
     branches:
-      - "main"
-    paths:
-      - 'Dockerfile'
-      - 'requirements.txt'
+      - main
+    tags:
+      - 'v*'
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE'
+
+permissions:
+  contents: read
+  issues: write
+  packages: write
+  id-token: write
 
 jobs:
-  build_push:
-    permissions:
-      contents: read
-      packages : write
-
-    env:
-      IMAGE_NAME: ${{ vars.GCR_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_REPO_NAME }}/${{ github.event.repository.name }}
-
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      # Étape 3 : Authentification à Google Cloud
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v0
-        with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
-
-      # Étape 4 : Authentification à Google Artifact Registry
-      - name: Configure Docker for Google Artifact Registry
-        run: |
-          gcloud auth configure-docker ${{ vars.GCR_REGION }}-docker.pkg.dev
-
-      # Étape 5 : Build de l'image Docker
-      - name: Build Docker image
-        run: |
-          docker build -t ${{ env.IMAGE_NAME }}:latest .
-
-      # Étape 6 : Push de l'image vers Google Artifact Registry
-      - name: Push Docker image
-        run: |
-          docker push ${{ env.IMAGE_NAME }}:latest 
+  build-push-gcp:
+    uses: gouv-nc-data/github-workflows/.github/workflows/build-push-on-gcp.yml@main
+    secrets:
+      GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
