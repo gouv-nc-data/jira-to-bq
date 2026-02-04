@@ -5,6 +5,6 @@ Ce repo héberge :
 - le workflow pour build et pousser l'image vers le artifact registry
 - le module Terraform permettant qui permet en étant appelé depuis le repo métier d'instancier un cloud scheduler qui va déclencher des dataproc serverless
 
-La workload en python est maintennue sur le repo gcp-dataproc-templates
+La workload en python est maintennue sur le repo gcp-templates
 
 ![archi](schema.png "Archi")
