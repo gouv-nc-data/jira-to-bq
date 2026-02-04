@@ -1,5 +1,6 @@
 google.cloud.logging
-pandas
+pandas<3.0.0
+pytz
 jira>=3.5.1
 google-cloud-bigquery
 pyarrow
